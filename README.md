@@ -1,10 +1,16 @@
 # Kafka Tutorial Project
 This project takes tweets concerning a specific subject, in this case ubiquitous political terms/names, and prints the tweets to the console.
 
-## Running locally
-Its assumed that you have a twitter developer account with the necessary key values created.  Within src/main/resources/application.properties, set these values appropriately.
+## Running Locally
+You will need to have a twitter developer account with the necessary key values created.  Within src/main/resources/application.properties, set these values appropriately.
 
-Also assumed is that you have kafka server running locally.  If your kafka installation is in your home folder, the command to start the kafka server is:
+## Starting Local Zookeeper & Kafka
+Start zookeeper locally.  If your kafka installation is in your home folder, the command to start the zookeeper server is:
 ```
-kafka-install-dir/bin/kafka-server-start.sh kafka-install-dir/config/server.properties
+~/kafka-install-dir/bin/zookeeper-server-start.sh ~/kafka-install-dir/config/zookeeper.properties
 ```
+Also needed is a kafka server running locally.  If your kafka installation is in your home folder, the command to start the kafka server is:
+```
+~/kafka-install-dir/bin/kafkafka-server-start.sh ~/kafka-install-dir/config/server.properties
+```
+
