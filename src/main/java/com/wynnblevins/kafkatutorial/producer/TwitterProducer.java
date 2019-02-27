@@ -9,26 +9,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
-import com.twitter.hbc.core.Constants;
-import com.twitter.hbc.core.Hosts;
-import com.twitter.hbc.core.HttpHosts;
-import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
-import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import com.twitter.hbc.httpclient.auth.Authentication;
-import com.twitter.hbc.httpclient.auth.OAuth1;
-import com.wynnblevins.kafkatutorial.config.TwitterConfig;
+import com.wynnblevins.kafkatutorial.factory.ClientFactory;
 import com.wynnblevins.kafkatutorial.factory.ProducerFactory;
 
 import org.apache.kafka.clients.producer.*;
-
-import java.util.Properties;
 
 public class TwitterProducer {
     Logger logger = LoggerFactory.getLogger(TwitterProducer.class.getName());
     
     ProducerFactory<String, String> producerFactory = new ProducerFactory<String, String>();
+    ClientFactory clientFactory = new ClientFactory();
     
     // I've picked some topics that are going to be tweeted about a bunch
     List<String> terms = Lists.newArrayList("Donald Trump", "CNN", "USA", "Nancy Pelosi", 
@@ -36,16 +27,14 @@ public class TwitterProducer {
 
     public TwitterProducer() {}
 
-    public void run(){
-
+    public void run() {
         logger.info("Setup...");
 
         /** Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream */
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
 
-        // create a twitter client
-        Client client = createTwitterClient(msgQueue);
-        // Attempts to establish a connection.
+        // create a twitter client and attempt to establish a connection.
+        Client client = clientFactory.createTwitterClient(msgQueue, terms);
         client.connect();
         
         // create a kafka producer
@@ -88,34 +77,4 @@ public class TwitterProducer {
         }
         logger.info("End of application");
     }
-    
-    public Client createTwitterClient(BlockingQueue<String> msgQueue){
-
-        /** Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth) */
-        Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
-        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-
-        hosebirdEndpoint.trackTerms(terms);
-        TwitterConfig config = new TwitterConfig();
-        Properties props = config.getTwitterConfig();
-        
-        // These secrets should be read from a config file
-        Authentication hosebirdAuth = new OAuth1(
-        		(String) props.get("consumerKey"), 
-        		(String) props.get("consumerSecret"), 
-        		(String) props.get("token"), 
-        		(String) props.getProperty("secret"));
-
-        ClientBuilder builder = new ClientBuilder()
-                .name("Hosebird-Client-01")                              // optional: mainly for the logs
-                .hosts(hosebirdHosts)
-                .authentication(hosebirdAuth)
-                .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(msgQueue));
-
-        Client hosebirdClient = builder.build();
-        return hosebirdClient;
-    }
-
-    
 }
