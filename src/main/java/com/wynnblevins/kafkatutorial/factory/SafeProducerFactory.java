@@ -6,8 +6,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-public class ProducerFactory<k extends Object, v extends Object> {
-	public KafkaProducer<String, String> createKafkaProducer(){
+public class SafeProducerFactory<k extends Object, v extends Object> {
+	public KafkaProducer<String, String> createSafeKafkaProducer(){
         String bootstrapServers = "127.0.0.1:9092";
 
         // create Producer properties

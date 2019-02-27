@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.core.Client;
 import com.wynnblevins.kafkatutorial.factory.ClientFactory;
-import com.wynnblevins.kafkatutorial.factory.ProducerFactory;
+import com.wynnblevins.kafkatutorial.factory.SafeProducerFactory;
 
 import org.apache.kafka.clients.producer.*;
 
 public class TwitterProducer {
     Logger logger = LoggerFactory.getLogger(TwitterProducer.class.getName());
     
-    ProducerFactory<String, String> producerFactory = new ProducerFactory<String, String>();
+    SafeProducerFactory<String, String> producerFactory = new SafeProducerFactory<String, String>();
     ClientFactory clientFactory = new ClientFactory();
     
     // I've picked some topics that are going to be tweeted about a bunch
@@ -38,7 +38,7 @@ public class TwitterProducer {
         client.connect();
         
         // create a kafka producer
-        KafkaProducer<String, String> producer = producerFactory.createKafkaProducer();
+        KafkaProducer<String, String> producer = producerFactory.createSafeKafkaProducer();
 
         // add a shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
