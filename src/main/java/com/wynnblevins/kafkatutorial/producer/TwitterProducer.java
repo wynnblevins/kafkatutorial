@@ -1,4 +1,4 @@
-package com.wynnblevins.kafkatutorial;
+package com.wynnblevins.kafkatutorial.producer;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -34,16 +34,12 @@ public class TwitterProducer {
 
     public TwitterProducer() {}
 
-    public static void main(String[] args) {
-        new TwitterProducer().run();
-    }
-
     public void run(){
 
         logger.info("Setup...");
 
         /** Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream */
-        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000);
+        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000);
 
         // create a twitter client
         Client client = createTwitterClient(msgQueue);
